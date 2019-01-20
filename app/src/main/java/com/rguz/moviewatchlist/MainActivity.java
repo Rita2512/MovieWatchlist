@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
         swipeContainer =  findViewById(R.id.main_content);
-        swipeContainer.setColorSchemeResources(android.R.color.holo_orange_dark);
+        swipeContainer.setColorSchemeResources(android.R.color.holo_purple);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
             @Override
             public void onRefresh(){
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 @Override
                 public void onFailure(Call<MoviesResponse> call, Throwable t) {
                     Log.d("Error", t.getMessage());
-                    Toast.makeText(MainActivity.this, "Error Fetching Data!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error calling Data!", Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -235,12 +235,15 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         );
         if (sortOrder.equals(this.getString(R.string.pref_most_popular))) {
             Log.d(LOG_TAG, "Sorting by most popular");
+            Toast.makeText(getApplicationContext(), "Showing most popular", Toast.LENGTH_SHORT).show();
             loadJSON();
         } else if (sortOrder.equals(this.getString(R.string.favorite))){
             Log.d(LOG_TAG, "Sorting by favorite");
+            Toast.makeText(getApplicationContext(), "Showing your favorites", Toast.LENGTH_SHORT).show();
             initViews2();
         } else{
             Log.d(LOG_TAG, "Sorting by vote average");
+            Toast.makeText(getApplicationContext(), "Showing highest rated", Toast.LENGTH_SHORT).show();
             loadJSON1();
         }
     }

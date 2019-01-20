@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/viewBg"
+    android:background="@color/viewBg2"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.RGuz.movieapp.DetailActivity"
+    tools:context="com.rguz.moviewatchlist.DetailActivity"
     tools:showIn="@layout/activity_detail">
 
     <LinearLayout
@@ -84,21 +84,27 @@
                 android:id="@+id/trailer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/trailer"
-                app:layout_constraintTop_toBottomOf="@+id/plotsynopsis"
-                app:layout_constraintLeft_toLeftOf="parent"/>
+                android:textSize="30sp"
+                app:layout_constraintBottom_toTopOf="@+id/recycler_view1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/plotsynopsis" />
 
             <com.github.ivbaranov.mfb.MaterialFavoriteButton
                 android:id="@+id/favorite_button"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_alignParentRight="true"
-                app:layout_constraintRight_toLeftOf="@+id/userrating"
-                app:layout_constraintTop_toBottomOf="@+id/userrating"
+                android:layout_marginLeft="240dp"
+                android:layout_marginRight="16dp"
+                android:background="@color/colorPrimary"
                 app:layout_constraintBottom_toTopOf="@+id/userrating"
                 app:layout_constraintLeft_toRightOf="@+id/releasedate"
-                android:background="@color/colorPrimary"/>
+                app:layout_constraintRight_toLeftOf="@+id/userrating"
+                app:layout_constraintTop_toBottomOf="@+id/userrating" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view1"
