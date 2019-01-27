@@ -77,6 +77,9 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
     public void deleteFavorite(int id){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(FavoriteContract.FavoriteEntry.TABLE_NAME, FavoriteContract.FavoriteEntry.COLUMN_MOVIEID+ "=" + id, null);
+           //db.close();
+//try room option replace
+
     }
 
     public List<Movie> getAllFavorite(){
