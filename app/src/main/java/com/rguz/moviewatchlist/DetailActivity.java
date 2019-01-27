@@ -2,6 +2,8 @@ package com.rguz.moviewatchlist;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.rguz.moviewatchlist.adapter.TrailerAdapter;
 import com.rguz.moviewatchlist.api.Client;
 import com.rguz.moviewatchlist.api.Service;
+import com.rguz.moviewatchlist.data.FavoriteContract;
 import com.rguz.moviewatchlist.data.FavoriteDbHelper;
 import com.rguz.moviewatchlist.model.Movie;
 import com.rguz.moviewatchlist.model.Trailer;
@@ -43,6 +46,8 @@ public class DetailActivity extends AppCompatActivity {
     private FavoriteDbHelper favoriteDbHelper;
     private Movie favorite;
     private final AppCompatActivity activity = DetailActivity.this;
+    private SQLiteDatabase mDb;
+
 
     Movie movie;
     String thumbnail, movieName, synopsis, rating, dateOfRelease;
@@ -57,7 +62,9 @@ public class DetailActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
+        //TODO
+        FavoriteDbHelper dbHelper = new FavoriteDbHelper(this);
+        mDb = dbHelper.getWritableDatabase();
 
         imageView =  findViewById(R.id.thumbnail_image_header);
         nameOfMovie =  findViewById(R.id.title);
@@ -96,43 +103,78 @@ public class DetailActivity extends AppCompatActivity {
             Toast.makeText(this, "No API Data", Toast.LENGTH_SHORT).show();
         }
 
-        MaterialFavoriteButton materialFavoriteButtonNice = findViewById(R.id.favorite_button);
+        MaterialFavoriteButton materialFavoriteButton = findViewById(R.id.favorite_button);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        materialFavoriteButtonNice.setOnFavoriteChangeListener(
-                new MaterialFavoriteButton.OnFavoriteChangeListener(){
-                    @Override
-                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite){
-                        if (favorite){
-                            SharedPreferences.Editor editor = getSharedPreferences("com.rguz.moviewatchlist.DetailActivity", MODE_PRIVATE).edit();
-                            editor.putBoolean("Favorite Added", true);
-                            editor.commit();
-                            saveFavorite();
-                            Snackbar.make(buttonView, "Added to Favorite",
-                                    Snackbar.LENGTH_SHORT).show();
-                            editor.apply();
-                        }else{
-                            int movie_id = getIntent().getExtras().getInt("id");
-                            favoriteDbHelper = new FavoriteDbHelper(DetailActivity.this);
-                            favoriteDbHelper.deleteFavorite(movie_id);
-
-                            SharedPreferences.Editor editor = getSharedPreferences("com.rguz.moviewatchlist.DetailActivity", MODE_PRIVATE).edit();
-                            editor.putBoolean("Favorite Removed", true);
-                            editor.commit();
-                            Snackbar.make(buttonView, "Removed from Favorite",
-                                    Snackbar.LENGTH_SHORT).show();
-                            editor.apply();
+        if (Exists(movieName)){
+            materialFavoriteButton.setFavorite(true);
+            materialFavoriteButton.setOnFavoriteChangeListener(
+                    new MaterialFavoriteButton.OnFavoriteChangeListener() {
+                        @Override
+                        public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+                            if (favorite == true) {
+                                saveFavorite();
+                                Snackbar.make(buttonView, "Added to Favorites",
+                                        Snackbar.LENGTH_SHORT).show();
+                            } else {
+                                favoriteDbHelper = new FavoriteDbHelper(DetailActivity.this);
+                                favoriteDbHelper.deleteFavorite(movie_id);
+                                Snackbar.make(buttonView, "Removed from Favorites",
+                                        Snackbar.LENGTH_SHORT).show();
+                            }
                         }
+                    });
 
-                    }
-                }
-        );
+
+        }else {
+            materialFavoriteButton.setOnFavoriteChangeListener(
+                    new MaterialFavoriteButton.OnFavoriteChangeListener() {
+                        @Override
+                        public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+                            if (favorite == true) {
+                                saveFavorite();
+                                Snackbar.make(buttonView, "Added to Favorites",
+                                        Snackbar.LENGTH_SHORT).show();
+                            } else {
+                                int movie_id = getIntent().getExtras().getInt("id");
+                                favoriteDbHelper = new FavoriteDbHelper(DetailActivity.this);
+                                favoriteDbHelper.deleteFavorite(movie_id);
+                                Snackbar.make(buttonView, "Removed from Favorites",
+                                        Snackbar.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+
+        }
+
+
+
 
         initViews();
 
     }
 
+    public boolean Exists(String searchItem) {
+
+        String[] projection = {
+                FavoriteContract.FavoriteEntry._ID,
+                FavoriteContract.FavoriteEntry.COLUMN_MOVIEID,
+                FavoriteContract.FavoriteEntry.COLUMN_TITLE,
+                FavoriteContract.FavoriteEntry.COLUMN_USERRATING,
+                FavoriteContract.FavoriteEntry.COLUMN_POSTER_PATH,
+                FavoriteContract.FavoriteEntry.COLUMN_PLOT_SYNOPSIS
+
+        };
+        String selection = FavoriteContract.FavoriteEntry.COLUMN_TITLE + " =?";
+        String[] selectionArgs = { searchItem };
+        String limit = "1";
+
+        Cursor cursor = mDb.query(FavoriteContract.FavoriteEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null, limit);
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        return exists;
+    }
 
     private void initViews(){
         trailerList = new ArrayList<>();
