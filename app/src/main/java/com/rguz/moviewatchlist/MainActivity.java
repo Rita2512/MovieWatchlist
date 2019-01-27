@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     int cacheSize = 10 * 1024 * 1024; // 10 MiB
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -419,24 +421,18 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private void getAllFavorite(){
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.getFavorite().observe(this, new Observer<List<FavoriteEntry>>() {
+        new AsyncTask<Void, Void, Void>(){
             @Override
-            public void onChanged(@Nullable List<FavoriteEntry> imageEntries) {
-                List<Movie> movies = new ArrayList<>();
-                for (FavoriteEntry entry : imageEntries){
-                    Movie movie = new Movie();
-                    movie.setId(entry.getMovieid());
-                    movie.setOverview(entry.getOverview());
-                    movie.setOriginalTitle(entry.getTitle());
-                    movie.setPosterPath(entry.getPosterpath());
-                    movie.setVoteAverage(entry.getUserrating());
-
-                    movies.add(movie);
-                }
-
-                adapter.setMovies(movies);
+            protected Void doInBackground(Void... params){
+                movieList.clear();
+                movieList.addAll(favoriteDbHelper.getAllFavorite());
+                return null;
             }
-        });
+            @Override
+            protected void onPostExecute(Void aVoid){
+                super.onPostExecute(aVoid);
+                adapter.notifyDataSetChanged();
+            }
+        }.execute();
     }
 }
