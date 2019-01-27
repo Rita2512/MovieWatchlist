@@ -116,7 +116,7 @@ public class DetailActivity extends AppCompatActivity {
 
             Glide.with(this)
                     .load(poster)
-                    .placeholder(R.drawable.load)
+                    .placeholder(R.drawable.loadt)
                     .into(imageView);
 
             //nameOfMovie.setText(movieName);
