@@ -302,25 +302,6 @@ public class DetailActivity extends AppCompatActivity {
         favoriteDbHelper.addFavorite(favorite);
     }
 
-   /* public void saveFavorite(){
-        Double rate = movie.getVoteAverage();
-        final FavoriteEntry favoriteEntry = new FavoriteEntry(movie_id, movieName, rate, thumbnail, synopsis);
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mDb.favoriteDao().insertFavorite(favoriteEntry);
-            }
-        });
-    }
-
-    private void deleteFavorite(final int movie_id){
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mDb.favoriteDao().deleteFavoriteWithId(movie_id);
-            }
-        });
-    }*/
 
    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -341,6 +322,8 @@ public class DetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+
     private void shareContent(){
 
         Bitmap bitmap = getBitmapFromView(imageView);
@@ -351,12 +334,13 @@ public class DetailActivity extends AppCompatActivity {
             fOut.flush();
             fOut.close();
             file.setReadable(true, false);
-            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_TEXT, movieName);
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
             intent.setType("image/png");
             startActivity(Intent.createChooser(intent, "Share image via"));
+           // startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
